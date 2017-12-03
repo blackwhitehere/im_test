@@ -1,0 +1,21 @@
+Solution is made of of three modules:
+	-bigquery -- allows to run a bigquery query
+	--sql -- exposes a connection object to a proxy mysql instance (requires proxy connection with cloud_sql_proxy)
+	--gcs -- allows to get access to GCS blob objects in a pre-defined bucket
+
+The modules are used in:
+	--task1.py
+	--task2.py
+	--test_task2.py
+
+Setup:
+
+recommended to setup default authorization credentials with gsutil
+pip install -r requirements.txt
+bigquery service auth file in the root directory to get the bigquery access.
+mysql service auth file in the root directory to allow for proxy connection to mysql instance.
+See config.py for configuration strings.
+
+To test task 2, run:
+
+python test_task2.py <city name, e.g. Abidos>
