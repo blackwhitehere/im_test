@@ -15,6 +15,7 @@ pip install -r requirements.txt
 bigquery service auth file in the root directory to get the bigquery access.
 mysql service auth file in the root directory to allow for proxy connection to mysql instance.
 See config.py for configuration strings.
+Need to add private_myql.py file with three strings: mysql_user, mysql_ip, mysql_password
 
 To test task 2, run:
 

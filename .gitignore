@@ -3,3 +3,4 @@
 *.csv
 *.gz
 *.gzip
+private_mysql.py

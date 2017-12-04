@@ -59,9 +59,14 @@ if not os.path.exists('countries.json'):
         with open('countries.json', 'w') as out:
             json.dump(country_rows, out)
 
-drop_tables = """SET SQL_SAFE_UPDATES = 0;
-DROP TABLE IF EXISTS cities; DROP TABLE IF EXISTS regions; DROP TABLE IF EXISTS countries;
-SET SQL_SAFE_UPDATES = 1;
+create_db = """CREATE DATABASE IF NOT EXISTS solutions
+                DEFAULT CHARACTER SET utf8
+                DEFAULT COLLATE utf8_general_ci;
+            """
+
+drop_tables = """   SET SQL_SAFE_UPDATES = 0;
+                    DROP TABLE IF EXISTS cities; DROP TABLE IF EXISTS regions; DROP TABLE IF EXISTS countries;
+                    SET SQL_SAFE_UPDATES = 1;
 """
 
 schema_countries = """
@@ -98,32 +103,35 @@ schema_cities = """
                         FOREIGN KEY (region_id) REFERENCES regions(id)
                     );
 """
-sql.conn.execute(drop_tables)
+conn = sql.im_db_engine.connect()
+conn.execute(create_db)
+conn.execute("""USE solutions;""")
+conn.execute(drop_tables)
 
-sql.conn.execute(schema_countries)
-sql.conn.execute(schema_regions)
-sql.conn.execute(schema_cities)
+conn.execute(schema_countries)
+conn.execute(schema_regions)
+conn.execute(schema_cities)
 
 
 with open('countries.json') as fc:
     countries_json = json.load(fc)
-    sql.conn.execute(sql.text("""
+    conn.execute(sql.text("""
         INSERT INTO `countries` (id, alpha2, alpha3, name, targetable) VALUES
         (:id, :alpha2, :alpha3, :name, :targetable);
     """), *countries_json)
 
 with open('regions.json') as fr:
     regions_json = json.load(fr)
-    sql.conn.execute(sql.text("""
+    conn.execute(sql.text("""
         INSERT INTO `regions` (id, country_id, name, iso_code) VALUES
         (:id, :country_id, :name, :iso_code);
     """), *regions_json)
 
 with open('cities.json') as fct:
     cities_json = json.load(fct)
-    sql.conn.execute(sql.text("""
+    conn.execute(sql.text("""
         INSERT INTO `cities` (id, country_id, region_id, name, iso_code) VALUES
         (:id, :country_id, :region_id, :name, :iso_code);
     """), *cities_json)
 
-sql.conn.close()
+conn.close()
